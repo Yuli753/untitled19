@@ -1,0 +1,43 @@
+ame: Run Cucumber Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run tests
+        run: ./gradlew test --info
+
+      - name: List test output
+        run: ls -la target/
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: cucumber-html-report
+          path: target/report.html
+
+      - name: Upload JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: cucumber-json-report
+          path: target/report.json
